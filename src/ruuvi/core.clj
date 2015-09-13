@@ -5,6 +5,7 @@
   (:require
    [ruuvi.swagger :as swagger]
    [ruuvi.middleware :as middleware]
+   [ruuvi.security :as sec]
    [ring.adapter.jetty :as jetty]
    [io.aviso.rook :as rook]
    [ring.util.response :as r]
@@ -16,11 +17,14 @@
    [schema.core :as s]
    [ring.middleware.cors :as cors]
    [ring.middleware.json :refer [wrap-json-body]]
-   [ring.middleware.resource :refer [wrap-resource]])
+   [ring.middleware.resource :refer [wrap-resource]]
+   [buddy.auth.middleware :refer [wrap-authentication]])
   )
 
-(def dbconn "postgres")
-(def system "goo-system")
+(def auth-conf {:passphrase "dummy"
+                :private-key "auth_privkey.pem"
+                :public-key "auth_pubkey.pem"})
+
 (def wrap-rook-middlewares (rook/compose-middleware
                             sv/wrap-with-schema-validation
                             ))
@@ -31,16 +35,18 @@
        {:context ["api"]
         :swagger-options swagger/swagger-options
         :default-middleware sv/wrap-with-schema-validation}
-       ["events" 'ruuvi.resources.events])
+       ["events" 'ruuvi.resources.events]
+       ["auth" 'ruuvi.resources.auth])
+      (wrap-authentication (sec/auth-backend auth-conf))
       rook/wrap-with-standard-middleware
-      (rook/wrap-with-injections {:dbconn dbconn :system system})
+      (rook/wrap-with-injections {:auth-conf auth-conf})
       (swagger/wrap-swagger-ui "/doc" "/api/swagger.json")
+      (middleware/wrap-request-logger request-counter)
+      middleware/wrap-x-forwarded-for
       (cors/wrap-cors
        :access-control-allow-origin #".*"
        :access-control-allow-methods [:get :put :post :delete]
        :access-control-allow-headers ["Content-Type"])
-      (middleware/wrap-request-logger request-counter)
-      middleware/wrap-x-forwarded-for
       )
   )
 

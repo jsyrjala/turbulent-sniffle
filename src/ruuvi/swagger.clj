@@ -84,17 +84,19 @@
     )
   )
 
-(def swagger-options (-> sw/default-swagger-options
-                         (update-in [:template :info] merge {:title "RuuviTracker"
-                                                             :version "Pre-Alpha"
-                                                             :description "RuuviTracker API"
-                                                             :contact {:email "foo@bar.fi"}
-                                                             :license {:name "EPL" :url ""}
-                                                             })
-                         (update-in [:template] merge {:produces ["application/json"]
-                                                       :consumes ["apllication/json"]
-                                                       :host "example.com"
-                                                       :basePath "/api"
-                                                       })
-                         (merge {:operation-decorator tagging-operation-decorator
-                                 :configurer tagging-configurer})))
+(def swagger-options
+  (-> sw/default-swagger-options
+      (update-in [:template :info] merge {:title "RuuviTracker"
+                                          :version "Pre-Alpha"
+                                          :description "RuuviTracker API"
+                                          :contact {:email "foo@bar.fi"}
+                                          :license {:name "Eclipse Public License - v 1.0"
+                                                    :url "https://www.eclipse.org/legal/epl-v10.html"}
+                                          })
+      (update-in [:template] merge {:produces ["application/json"]
+                                    :consumes ["application/json"]
+                                    :host ""
+                                    :basePath ""
+                                    })
+      (merge {:operation-decorator tagging-operation-decorator
+              :configurer tagging-configurer})))

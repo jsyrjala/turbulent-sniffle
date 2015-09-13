@@ -14,7 +14,6 @@
   {:summary "Create a new event"
    :description "API(swagger docs) overrides docstring"
    :body-schema domain/NewEvent}
-  [^:request-key body-params
-   ^:injection system]
+  [^:request-key body-params]
   (r/response {:hello "world"})
   )
