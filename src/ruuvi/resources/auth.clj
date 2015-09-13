@@ -28,13 +28,13 @@
   )
 
 (defn- auth-failed [username reason]
-  (info "Authentication failed for user" username ". " reason)
+  (info "Authentication failed for user" username ":" reason)
   (r/unauthorized {:error "unauthorized" :description "Bad credentials"})
   )
 
 (defn- auth-success [user auth-conf]
-  (let [assertions (sec/user-assertions user)
-        token (sec/create-auth-token auth-conf assertions)
+  (let [claims (sec/user-claims user)
+        token (sec/create-auth-token auth-conf claims)
         username (:username user)]
     (info "Authentication success for user" username)
     (r/created token)

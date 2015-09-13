@@ -30,6 +30,7 @@
                             ))
 
 (def ^{:private true} request-counter (atom 0))
+
 (defn- app []
   (-> (rook/namespace-handler
        {:context ["api"]

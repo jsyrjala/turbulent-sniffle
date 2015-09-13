@@ -11,6 +11,7 @@
    [buddy.auth.backends.token :refer [jws-backend]]
    [clj-time.core :as t]
    [clojure.java.io :as io]
+   [slingshot.slingshot :refer [throw+]]
    )
   )
 
@@ -24,20 +25,33 @@
   )
 
 (def private-key (memoize private-key*))
+
 (def public-key (memoize public-key*))
 
-(defn user-assertions [user]
+(defn user-claims [user]
   (dissoc user :password)
   )
 
-(defn create-auth-token [auth-conf assertions]
-  (let [expires (-> (t/plus (t/now) (t/days 1)) (util/to-timestamp))]
-    {:token (jws/sign assertions
+;; TODO contains claims in plain text
+(defn create-auth-token [auth-conf claims]
+  (let [now (t/now)
+        expires (-> (t/plus now (t/days 1)) (util/to-timestamp))
+        created (-> now (util/to-timestamp))]
+    ;; see https://tools.ietf.org/html/rfc7519#section-4.1
+    {:token (jws/sign claims
                       (private-key auth-conf)
-                      {:alg :rs256 :exp expires})}
+                      {:alg :rs256
+                       :exp expires
+                       :sub (-> claims :username)
+                       :iat created })}
     )
   )
 
 
 (defn auth-backend[auth-conf]
-  (jws-backend {:secret (public-key auth-conf)}))
+  (jws-backend {:secret (public-key auth-conf)
+                :token "Token"
+                :options {:alg :rs256}
+                :on-error (fn [req err]
+                            (throw+ err))
+                }))
