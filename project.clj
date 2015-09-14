@@ -1,6 +1,7 @@
 (defproject ruuvi "0.0.1"
   :description "Ruuvi server"
   :main ruuvi.core/main
+  :plugins [[lein-environ "1.0.1"]]
   :dependencies
   [
    [org.clojure/clojure "1.6.0"]
@@ -14,6 +15,8 @@
    [ch.qos.logback/logback-classic "1.1.3"]
    [metosin/ring-http-response "0.6.5"]
    [clj-time "0.11.0"]
+   [environ "1.0.1"]
+
    ;; security
    [buddy/buddy-auth "0.6.2"]
    [buddy/buddy-sign "0.6.0"]
@@ -24,10 +27,20 @@
    [org.clojure/java.jdbc "0.4.1"]
    [java-jdbc/dsl "0.1.3"]
    [honeysql "0.6.1"]
-   [yesql "0.4.2"]
+   [yesql "0.5.0"]
    [org.postgresql/postgresql "9.3-1100-jdbc41"]
-   [com.zaxxer/HikariCP "2.3.9"]
+   [com.zaxxer/HikariCP "2.4.1"]
    [ragtime "0.5.2"]
    ;; database test
    [com.h2database/h2 "1.4.189"]
-   ])
+   ]
+
+  :profiles {:dev {:source-paths ["dev"]
+                   :resource-paths ["swagger-ui"]
+                   :dependencies [[clj-http "2.0.0"]
+                                  [ring-mock "0.1.5"]
+                                  [lein-light-nrepl "0.1.3"]
+                                  ]}
+             :uberjar {:resource-paths ["swagger-ui"]}
+             }
+  )
