@@ -22,5 +22,7 @@
     (HikariDataSource. config)
   ))
 
-
+(defn- make-db-spec [db-spec]
+  (assoc db-spec :pool {:datasource (make-hikari-pool db-spec)})
+  )
 
