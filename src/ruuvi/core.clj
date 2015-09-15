@@ -53,7 +53,7 @@
 
 (defn start-server
   "Starts a server on the named port, and returns a function that shuts it back down."
-  [port]
+  [port config]
   (let [opts {:reload true
               :log false
               :track true
@@ -64,6 +64,3 @@
     (log/infof "Listening on port %d." port)
     #(.stop server)))
 
-(defn main
-  []
-  (start-server 8080))
