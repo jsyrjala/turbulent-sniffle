@@ -1,6 +1,6 @@
 (defproject ruuvi "0.0.1"
   :description "Ruuvi server"
-  :main ruuvi.core/main
+  :main ruuvi.main
   :plugins [[lein-environ "1.0.1"]]
   :dependencies
   [
@@ -16,11 +16,12 @@
    [metosin/ring-http-response "0.6.5"]
    [clj-time "0.11.0"]
    [environ "1.0.1"]
+   [com.stuartsierra/component "0.2.3"]
+   [org.clojure/tools.cli "0.3.3"]
 
    ;; security
    [buddy/buddy-auth "0.6.2"]
    [buddy/buddy-sign "0.6.0"]
-
    [buddy/buddy-hashers "0.6.0"]
 
    ;; database
@@ -41,6 +42,7 @@
                                   [ring-mock "0.1.5"]
                                   [lein-light-nrepl "0.1.3"]
                                   ]}
-             :uberjar {:resource-paths ["swagger-ui"]}
+             :uberjar {:resource-paths ["swagger-ui"]
+                       :aot :all}
              }
   )
