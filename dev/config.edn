@@ -1,0 +1,37 @@
+{
+ ;;:logging-config "./dev-resources/logback-dev.xml"
+
+ :webserver
+ {
+  :host "localhost"
+  :port 7000
+  }
+
+ :database
+ {
+  :db-spec {:connection-uri "jdbc:h2:~/ruuvidb/test;DATABASE_TO_UPPER=TRUE;TRACE_LEVEL_FILE=4"
+            :classname "org.h2.Driver"
+            :datasource-classname "org.h2.jdbcx.JdbcDataSource"
+            :username ""
+            :password ""
+
+            ;; connection-pool
+            :max-connections-per-partition 20
+            :partition-count 4
+            :max-connections 80
+            :connection-test-query "VALUES 1"}
+
+  :migration {:enabled true}
+  }
+
+ :nrepl
+ {
+  :port 12345
+  :enabled true
+  ;; :middlewares ["lighttable.nrepl.handler/lighttable-ops"]
+  }
+
+
+ }
+
+
