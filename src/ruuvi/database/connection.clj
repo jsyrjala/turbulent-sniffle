@@ -14,6 +14,7 @@
                 max-connections
                 connection-test-query]} db-spec]
     (doto config
+      (.setRegisterMbeans true)
       (.setDataSourceClassName datasource-classname)
       (.setMaximumPoolSize max-connections)
       (.setConnectionTestQuery connection-test-query)
