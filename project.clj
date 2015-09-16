@@ -18,6 +18,7 @@
    [environ "1.0.1"]
    [com.stuartsierra/component "0.2.3"]
    [org.clojure/tools.cli "0.3.3"]
+   [org.clojure/tools.nrepl "0.2.10"]
 
    ;; security
    [buddy/buddy-auth "0.6.2"]
