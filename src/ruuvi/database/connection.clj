@@ -6,14 +6,14 @@
   (:import [com.zaxxer.hikari HikariDataSource HikariConfig]))
 
 (defn- make-hikari-pool [db-spec]
-  (let [config (HikariConfig.)
+  (let [hikari-config (HikariConfig.)
         {:keys [datasource-classname
                 connection-uri
                 username
                 password
                 max-connections
                 connection-test-query]} db-spec]
-    (doto config
+    (doto hikari-config
       (.setRegisterMbeans true)
       (.setDataSourceClassName datasource-classname)
       (.setMaximumPoolSize max-connections)
@@ -22,8 +22,9 @@
       (.addDataSourceProperty "user" username)
       (.addDataSourceProperty "password" password)
       (.setPoolName "ruuvi-db-hikari"))
-    (HikariDataSource. config)
+    (HikariDataSource. hikari-config)
   ))
+
 
 (defn- make-db-spec [db-spec]
   {:datasource (make-hikari-pool db-spec)}

@@ -4,7 +4,6 @@
    )
   )
 
-
 (defn read-config [file]
   (with-open [r (java.io.PushbackReader.
                  (clojure.java.io/reader file))]

@@ -1,6 +1,6 @@
 (ns ruuvi.main
   (:require [clojure.tools.cli :refer [parse-opts]]
-            [ruuvi.core :as core])
+            )
   (:gen-class)
   )
 
@@ -65,7 +65,7 @@
     (let [start-server (eval `ruuvi.core/start-server)]
       (println "Start with command line" args)
       (add-shutdown-hook)
-      (core/start-server (:port opts) (:config opts) )
+      (start-server (:port opts) (:config opts) )
       )
     ))
 

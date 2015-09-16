@@ -7,10 +7,11 @@
             )
   )
 
-(defn system [config-file]
-  (let [config (config/read-config config-file)
-        {:keys [database nrepl]} config
-        database (-> config :database)
+;; TODO support also direct map as param
+(defn create-system [config-file]
+  (let [system-config (config/read-config config-file)
+        {:keys [database nrepl]} system-config
+        database (-> system-config :database)
         {:keys [db-spec migration]} database
         ]
     (component/system-map
@@ -20,13 +21,8 @@
                        [:db])
       )))
 
-;;
-(comment
-  (def s (start (system "dev/config.edn")))
-  (stop s)
+(defn start-system [system]
+  (component/start system))
 
-  (keys s)
-
-  (migration/migrate (-> s :migration))
-  (migration/rollback-all (-> s :migration))
-  )
+(defn stop-system [system]
+  (component/stop system))
