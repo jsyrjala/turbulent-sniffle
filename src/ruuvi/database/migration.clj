@@ -2,6 +2,13 @@
   "Database migrations are a way to create and update database structure
   (e.g table and indices). Migration system keeps track what migrations
   are already applied to database.
+
+  Migrations are implemented as *.sql files in resources/ directory
+  from where they are loaded via classpath.
+
+  Each migration consist of foo.up.sql and foo.down.sql. *.up.sql is
+  executed to execute database change, *.down.sql is executed to rollback
+  the change.
   "
   (:require
    [clojure.tools.logging :refer [debug info]]
