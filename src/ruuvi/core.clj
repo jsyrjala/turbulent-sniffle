@@ -22,8 +22,8 @@
   )
 
 (def auth-conf {:passphrase "dummy"
-                :private-key "auth_privkey.pem"
-                :public-key "auth_pubkey.pem"})
+                :private-key "test/auth_privkey.pem"
+                :public-key "test/auth_pubkey.pem"})
 
 (def wrap-rook-middlewares (rook/compose-middleware
                             sv/wrap-with-schema-validation

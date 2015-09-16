@@ -4,10 +4,14 @@
    )
   )
 
+(defn- validate [config]
+  config
+  )
+
 (defn read-config [file]
   (with-open [r (java.io.PushbackReader.
                  (clojure.java.io/reader file))]
-    (doall (edn/read r))))
+    (validate (doall (edn/read r)))))
 
 
 ;;(read-config "dev/config.edn")

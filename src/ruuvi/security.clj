@@ -16,12 +16,12 @@
   )
 
 (defn- private-key* [auth-conf]
-  (ks/private-key (io/resource (:private-key auth-conf))
+  (ks/private-key (io/reader (:private-key auth-conf))
                   (:passphrase auth-conf))
   )
 
 (defn- public-key* [auth-conf]
-  (ks/public-key (io/resource (:public-key auth-conf)))
+  (ks/public-key (io/reader (:public-key auth-conf)))
   )
 
 (def private-key (memoize private-key*))
