@@ -4,7 +4,7 @@
   :plugins [[lein-environ "1.0.1"]]
   :dependencies
   [
-   [org.clojure/clojure "1.6.0"]
+   [org.clojure/clojure "1.7.0"]
    [io.aviso/rook "0.1.36"]
    [ring "1.4.0"]
    [ring/ring-json "0.4.0"]

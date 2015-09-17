@@ -1,8 +1,8 @@
-(go)
+(ns foo
+  (:require [user]
+            [clojure.tools.namespace.repl :refer [refresh]]
+            ))
 
-(reset)
+(user/reset)
 
-(clojure.repl/pst)
-(require 'ruuvi.core)
 
-;;(def s (ruuvi.core/start-server 7000 1))

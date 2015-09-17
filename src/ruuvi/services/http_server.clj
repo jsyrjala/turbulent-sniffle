@@ -18,11 +18,12 @@
       (.addBean (Log/getLog))))
   )
 
-(defrecord JettyServer [config handler]
+(defrecord JettyServer [config ring-handler]
   component/Lifecycle
   (start [component]
          (info "JettyServer starting in port" (-> config :port))
-         (let [server (jetty/run-jetty handler
+         (let [app (-> ring-handler :app)
+               server (jetty/run-jetty app
                                        (assoc config
                                          :join? false))]
            (enable-jmx server)
@@ -34,6 +35,6 @@
           (.stop server))
         (dissoc component :server)))
 
-(defn new-http-server [http-server handler]
-  (->JettyServer http-server handler)
+(defn new-http-server [http-server]
+  (map->JettyServer {:config http-server})
   )

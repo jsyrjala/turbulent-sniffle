@@ -1,10 +1,11 @@
 (ns ruuvi.system
   (:require [com.stuartsierra.component :refer [using start stop] :as component]
+            [ruuvi.config :as config]
             [ruuvi.database.connection]
             [ruuvi.database.migration]
             [ruuvi.services.nrepl]
             [ruuvi.services.http-server]
-            [ruuvi.config :as config]
+            [ruuvi.ring-handler]
             )
   )
 
@@ -19,7 +20,10 @@
      :nrepl-server (ruuvi.services.nrepl/new-nrepl-server nrepl)
      :migration (using (ruuvi.database.migration/new-database-migration migration)
                        [:db])
-     :http-server (ruuvi.services.http-server/new-http-server http-server nil)
+     :ring-handler (using (ruuvi.ring-handler/new-ring-handler)
+                          [:db])
+     :http-server (using (ruuvi.services.http-server/new-http-server http-server)
+                         [:ring-handler])
      )))
 
 (defn start-system [system]
