@@ -10,6 +10,11 @@
    [ring/ring-json "0.4.0"]
    [com.cognitect/transit-clj "0.8.281"]
    [metosin/ring-swagger-ui "2.1.2"]
+   ;; http
+   [ring/ring-jetty-adapter "1.4.0"]
+   [org.eclipse.jetty/jetty-server "9.2.13.v20150730"]
+   [org.eclipse.jetty/jetty-jmx "9.2.13.v20150730"]
+
    ;; misc
    [ring-cors "0.1.7"]
    [ch.qos.logback/logback-classic "1.1.3"]
