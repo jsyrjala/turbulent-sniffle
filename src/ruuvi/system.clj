@@ -1,13 +1,12 @@
 (ns ruuvi.system
   (:require [com.stuartsierra.component :refer [using start stop] :as component]
-            [ruuvi.database.connection :as connection]
-            [ruuvi.database.migration :as migration]
-            [ruuvi.services.nrepl :as nrepl]
+            [ruuvi.database.connection]
+            [ruuvi.database.migration]
+            [ruuvi.services.nrepl]
             [ruuvi.config :as config]
             )
   )
 
-;; TODO support also direct map as param
 (defn create-system [config-file]
   (let [system-config (config/read-config config-file)
         {:keys [database nrepl]} system-config
@@ -15,11 +14,12 @@
         {:keys [db-spec migration]} database
         ]
     (component/system-map
-     :db (connection/new-db-pool db-spec)
-     :nrepl-server (nrepl/new-nrepl-server nrepl)
-     :migration (using (migration/new-database-migration migration)
+     :db (ruuvi.database.connection/new-db-pool db-spec)
+     :nrepl-server (ruuvi.services.nrepl/new-nrepl-server nrepl)
+     :migration (using (ruuvi.database.migration/new-database-migration migration)
                        [:db])
-      )))
+
+     )))
 
 (defn start-system [system]
   (component/start system))

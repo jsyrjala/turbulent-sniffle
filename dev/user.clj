@@ -1,5 +1,5 @@
 (ns user
-  (:require [ruuvi.system :as system]
+  (:require [ruuvi.system]
             [clojure.edn :as edn]
             [clojure.tools.logging :refer [info error] :as log]
             [com.stuartsierra.component :as component]
@@ -13,7 +13,7 @@
   []
   (alter-var-root
    #'system
-   (constantly (system/create-system "dev/config.edn"))))
+   (constantly (ruuvi.system/create-system "dev/config.edn"))))
 
 (defn start
   "Starts the current development system."
