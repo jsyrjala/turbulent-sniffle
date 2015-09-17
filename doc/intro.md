@@ -1,3 +1,3 @@
-# Introduction to rooktest
+# Introduction to ruuvi server
 
 TODO: write [great documentation](http://jacobian.org/writing/what-to-write/)

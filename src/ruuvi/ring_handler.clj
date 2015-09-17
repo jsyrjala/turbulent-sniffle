@@ -41,6 +41,7 @@
         :default-middleware sv/wrap-with-schema-validation}
        ["events" 'ruuvi.resources.events]
        ["auth" 'ruuvi.resources.auth])
+
       (wrap-authentication (sec/auth-backend auth-conf))
       rook/wrap-with-standard-middleware
       (rook/wrap-with-injections {:auth-conf auth-conf})
@@ -60,8 +61,7 @@
          (debug "RingHandler starting")
          (let [app (create-app)
                wrapped-app (rook/wrap-with-injections app component)]
-           (assoc component :app wrapped-app)
-           ))
+           (assoc component :app wrapped-app)))
   (stop [component]
         (debug "RingHandler stopping")
         (dissoc component :app)))

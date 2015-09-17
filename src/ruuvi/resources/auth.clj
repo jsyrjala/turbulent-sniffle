@@ -46,7 +46,8 @@
    :route [:post]
    :body-schema domain/Authentication}
   [^:request-key body-params
-   ^:injection auth-conf]
+   ^:injection auth-conf
+   ^:injection db]
   (let [username (-> body-params :username)
         password (-> body-params :password)
         user (find-user username)]
