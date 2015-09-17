@@ -1,7 +1,7 @@
 {
  ;;:logging-config "./dev-resources/logback-dev.xml"
 
- :webserver
+ :http-server
  {
   :host "localhost"
   :port 7000
