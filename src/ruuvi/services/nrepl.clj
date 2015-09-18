@@ -7,17 +7,25 @@
    ))
 
 
+(defn- get-running-port [server]
+  (.getLocalPort (-> server :server-socket)))
+
 (defrecord NReplServer [port]
   component/Lifecycle
   (start [component]
-         (debug "NReplServer starting in port" port)
-         (let [server (nrepl/start-server :port port)]
-           (assoc component :server server)))
+         (if (= port 0)
+           (debug "NReplServer starting in random port")
+           (debug "NReplServer starting in port" port))
+         (let [server (nrepl/start-server :port port)
+               running-port (get-running-port server)]
+           (debug "nREPL server running in port" port)
+           ;; Running port is zero here because nREPL binds the port asynchronously
+           (assoc component :server server :server-port running-port)))
   (stop [component]
         (debug "NReplServer stopping")
         (when-let [server (-> component :server)]
           (nrepl/stop-server server))
-        (dissoc component :server)))
+        (dissoc component :server :server-port)))
 
 ;; TODO move to util
 (defrecord NullComponent []

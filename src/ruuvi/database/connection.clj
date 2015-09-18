@@ -5,6 +5,11 @@
             )
   (:import [com.zaxxer.hikari HikariDataSource HikariConfig]))
 
+(defn- pool-name [random-pool-name]
+  (if random-pool-name
+    (str "ruuvi-db-hikari-" (rand-int 999999))
+    "ruuvi-db-hikari"))
+
 (defn- make-hikari-pool [db-spec]
   (let [hikari-config (HikariConfig.)
         {:keys [datasource-classname
@@ -12,7 +17,8 @@
                 username
                 password
                 max-connections
-                connection-test-query]} db-spec]
+                connection-test-query
+                random-pool-name]} db-spec]
     (doto hikari-config
       (.setRegisterMbeans true)
       (.setDataSourceClassName datasource-classname)
@@ -21,7 +27,7 @@
       (.addDataSourceProperty "URL", connection-uri)
       (.addDataSourceProperty "user" username)
       (.addDataSourceProperty "password" password)
-      (.setPoolName "ruuvi-db-hikari"))
+      (.setPoolName (pool-name random-pool-name)))
     (HikariDataSource. hikari-config)
   ))
 

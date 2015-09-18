@@ -6,3 +6,4 @@
 (user/reset)
 
 
+(user/stop)

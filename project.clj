@@ -1,7 +1,8 @@
 (defproject ruuvi "0.0.1"
   :description "Ruuvi server"
   :main ruuvi.main
-  :plugins [[lein-environ "1.0.1"]]
+  :plugins [[lein-environ "1.0.1"]
+            [lein-midje "3.1.3"]]
   :dependencies
   [
    [org.clojure/clojure "1.7.0"]
@@ -47,6 +48,7 @@
                    :dependencies [[clj-http "2.0.0"]
                                   [ring-mock "0.1.5"]
                                   [lein-light-nrepl "0.1.3"]
+                                  [midje "1.7.0"]
                                   ]}
              :uberjar {:resource-paths ["swagger-ui"]
                        :aot :all}
