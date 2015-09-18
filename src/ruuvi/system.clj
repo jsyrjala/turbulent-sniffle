@@ -26,8 +26,8 @@
                          [:ring-handler])
      )))
 
-(defn start-system[config-file]
-  (component/start (create-system config-file)))
+(defn start-system[system]
+  (component/start system))
 
 (defn stop-system[system]
   (component/stop system))

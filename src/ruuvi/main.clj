@@ -1,5 +1,6 @@
 (ns ruuvi.main
   (:require [clojure.tools.cli :refer [parse-opts]]
+            [clojure.tools.logging :as log :refer [debug info]]
             )
   (:gen-class)
   )
@@ -11,15 +12,13 @@
 (def cli-options
   [["-c" "--config FILE" "Configuration file required"
     :validate [file-exists "File must exist and be readable."]]
-   ["-p" "--port PORT" "Port number for server"
-    :parse-fn #(Integer/parseInt %)
-    :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]
    ["-h" "--help" "Display help"]
    ])
 
 (defn- help-title[]
   (println "ruuvi server")
   )
+
 (defn- cli-help
   ([opts] (cli-help opts 0))
   ([opts exitcode]
@@ -60,23 +59,35 @@
     (stop-system system)))
 
 (defn- add-shutdown-hook
-  "Stop system gracefully when application terminates."
+  "Stop the system gracefully when application terminates."
   [system]
+  (debug "Registering shutdown hook")
   (.addShutdownHook (Runtime/getRuntime)
                     (Thread. (fn [] (stop-system system)))))
 
-(defn -main [& args]
-  (let [opts (parse-cli args)]
-    (require '[ruuvi.system])
-    (let [start-system (eval `ruuvi.system/start-system)
-          stop-system (eval `ruuvi.system/stop-system)]
-      (println "Start with command line" args)
+(defn- print-process-id
+  "Print process id (PID) of the current process"
+  []
+  (require '[ruuvi.util])
+  (let [pid (eval `(ruuvi.util/process-id))]
+    (info "Process ID:" pid)))
 
-      (let [system (start-system (:config opts) )]
+(defn -main
+  "Starting point of the program when running from command line."
+  [& args]
+  (let [opts (parse-cli args)]
+
+    (require '[ruuvi.system])
+    (let [create-system (eval `ruuvi.system/create-system)
+          start-system (eval `ruuvi.system/start-system)
+          stop-system (eval `ruuvi.system/stop-system)]
+      (info "Start with command line" args)
+      (print-process-id)
+
+      (let [system (create-system (:config opts) )]
         (add-shutdown-hook system)
+        (start-system system)
         )
       )
     ))
 
-;;
-;;(-main "foo" "-p" "7000" "-c" "/etc/passwd")
