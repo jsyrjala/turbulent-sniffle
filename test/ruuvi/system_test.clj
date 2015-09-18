@@ -1,6 +1,6 @@
-(ns ruuvi.core-test
+(ns ruuvi.system-test
   (:require [clojure.test :refer :all]
-            [ruuvi.core :refer :all]))
+            [ruuvi.system :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."

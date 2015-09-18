@@ -29,9 +29,9 @@
   (System/exit exitcode)
   ))
 
-(defn- cli-errors [opts]
+(defn- cli-errors [opts & [msg]]
   (help-title)
-  (println "Failed to parse command-line arguments:")
+  (println (or msg "Failed to parse command-line arguments:"))
   (doall
    (for [err (-> opts :errors)]
      (println err)
@@ -40,32 +40,41 @@
   (System/exit 1)
   )
 
+(defn- validate-cli [opts]
+  (when-not (-> opts :options :config)
+    (cli-errors opts "Missing mandatory parameter --config")
+    ))
+
 (defn- parse-cli [args]
   (let [{:keys [options] :as opts} (parse-opts args cli-options)]
     (cond (-> opts :options :help) (cli-help opts)
           (-> opts :errors) (cli-errors opts)
-          :default (-> opts :options))))
+          :default (validate-cli opts))
+    (-> opts :options)))
 
 
 (defn- stop-system
   "Stop the system."
-  []
-  (println "TODO stopping system")
-  )
+  [system]
+  (let [stop-system (eval `ruuvi.system/stop-system)]
+    (stop-system system)))
 
 (defn- add-shutdown-hook
   "Stop system gracefully when application terminates."
-  []
+  [system]
   (.addShutdownHook (Runtime/getRuntime)
-                    (Thread. stop-system)))
+                    (Thread. (fn [] (stop-system system)))))
 
 (defn -main [& args]
   (let [opts (parse-cli args)]
-    (require '[ruuvi.core])
-    (let [start-server (eval `ruuvi.core/start-server)]
+    (require '[ruuvi.system])
+    (let [start-system (eval `ruuvi.system/start-system)
+          stop-system (eval `ruuvi.system/stop-system)]
       (println "Start with command line" args)
-      (add-shutdown-hook)
-      (start-server (:port opts) (:config opts) )
+
+      (let [system (start-system (:config opts) )]
+        (add-shutdown-hook system)
+        )
       )
     ))
 
