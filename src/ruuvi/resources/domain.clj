@@ -9,6 +9,13 @@
    :version String
    :server_time java.util.Date})
 
+;; Common
+
+(defschema ErrorResponse
+  {:error String
+   (optional-key :description) String
+   Any Any})
+
 ;; Events
 (defschema NewEvent
   {:version (enum "1")

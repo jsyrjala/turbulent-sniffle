@@ -5,21 +5,14 @@
    [ruuvi.resources.domain :as domain]
    [clojure.tools.logging :as log :refer [info debug]]
    [ring.util.http-response :as r]
-   )
-  (:import
-   [javax.servlet.http HttpServletResponse]
+   [ring.util.http-status :as status]
    )
   )
-
-
-;; TODO move to some util
-(defn ^:private always-ok-response [schema]
-  {HttpServletResponse/SC_OK schema})
 
 (defn ping
   "Ping Pong"
   {:route [:get ["ping"]]
-   :responses (always-ok-response [domain/Pong])}
+   :responses {status/ok domain/Pong}}
   []
   (r/ok {:server "RuuviServer"
          :version "0.0.1"

@@ -8,6 +8,7 @@
    [buddy.hashers :as hs]
    [clojure.tools.logging :as log :refer [info debug]]
    [ring.util.http-response :as r]
+   [ring.util.http-status :as status]
    )
   )
 
@@ -44,7 +45,10 @@
   "Authenticate and obtain auth token"
   {:summary "Authenticate and obtain auth token"
    :route [:post]
-   :body-schema domain/Authentication}
+   :body-schema domain/Authentication
+   :responses {status/ok domain/AuthToken
+               status/unauthorized domain/ErrorResponse
+               }}
   [^:request-key body-params
    ^:injection auth-conf
    ^:injection db]
