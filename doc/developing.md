@@ -34,4 +34,11 @@ Run application:
 lein run --config dev/config.edn
 ```
 
-Point your web browser to http://localhost:7000/doc/index.html and you should Swagger documentation for the REST api. The server is now running againts H2 database.
+Point your web browser to http://localhost:7000/doc/index.html and you should see Swagger documentation for the REST api. The server is now running againts H2 database.
+
+## Generating HTML documentation for source code
+
+You can generate (Marginalia)[https://github.com/MichaelBlume/marginalia] based html documentation of the source code by running
+```
+lein marg
+```

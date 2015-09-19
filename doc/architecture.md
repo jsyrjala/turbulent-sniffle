@@ -42,7 +42,7 @@ The idea is that once a migration file is released as a part of the application,
 
 # Domain objects
 
-Domain objects are implemented with (Schema)[https://github.com/Prismatic/schema].
+Domain objects are implemented with [Schema](https://github.com/Prismatic/schema).
 
 # Code structure
 
@@ -67,7 +67,7 @@ Domain objects are implemented with (Schema)[https://github.com/Prismatic/schema
   - [http_server.clj](/src/ruuvi/http_server.clj) is a Component that provides a web server. The web server is implemented with [Jetty](http://www.eclipse.org/jetty/).
   - [nrepl.clj](/src/ruuvi/http_server.clj) is a Component starts up a [nREPL](https://github.com/clojure/tools.nrepl) server. You can connect to the server and inspect and execute code in a running system.
 
-- `dev/
+- `dev/`
   - [user.clj](/dev/user.clj) contains functions that are used when developing. Mainly starting and stopping components.
 
 - `test/` contains unit and integration tests.
