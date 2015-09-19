@@ -1,10 +1,12 @@
+[![Build Status](https://travis-ci.org/jsyrjala/turbulent-sniffle.svg?branch=master)](https://travis-ci.org/jsyrjala/turbulent-sniffle)
+
 # ruuvi server
 
 A Clojure library designed to ... well, that part is up to you.
 
 ## Usage
 
-FIXME
+See [Developer's guide](/doc/developing.md) and [architecture description](/doc/architecture.md).
 
 ## License
 
