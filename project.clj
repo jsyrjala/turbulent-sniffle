@@ -22,9 +22,9 @@
    [metosin/ring-http-response "0.6.5"]
    [clj-time "0.11.0"]
    [environ "1.0.1"]
-   [com.stuartsierra/component "0.2.3"]
+   [com.stuartsierra/component "0.3.0"]
    [org.clojure/tools.cli "0.3.3"]
-   [org.clojure/tools.nrepl "0.2.10"]
+   [org.clojure/tools.nrepl "0.2.11"]
 
    ;; security
    [buddy/buddy-auth "0.6.2"]
@@ -32,7 +32,7 @@
    [buddy/buddy-hashers "0.6.0"]
 
    ;; database
-   [org.clojure/java.jdbc "0.4.1"]
+   [org.clojure/java.jdbc "0.4.2"]
    [java-jdbc/dsl "0.1.3"]
    [honeysql "0.6.1"]
    [yesql "0.5.0"]
@@ -47,7 +47,7 @@
                    :resource-paths ["swagger-ui"]
                    :dependencies [[clj-http "2.0.0"]
                                   [ring-mock "0.1.5"]
-                                  [lein-light-nrepl "0.1.3"]
+                                  [lein-light-nrepl "0.2.0"]
                                   [midje "1.7.0"]
                                   ]}
              :uberjar {:resource-paths ["swagger-ui"]
