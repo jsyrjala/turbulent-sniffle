@@ -4,16 +4,17 @@
             [clojure.tools.logging :refer [info error] :as log]
             [com.stuartsierra.component :as component]
             [clojure.tools.namespace.repl :refer [refresh refresh-all]]
+            [midje.repl :as midje]
             ))
 
 (def system nil)
 
 (defn init
   "Constructs the current development system."
-  []
+  [& [config-file]]
   (alter-var-root
    #'system
-   (constantly (ruuvi.system/create-system "dev/config.edn"))))
+   (constantly (ruuvi.system/create-system (or config-file "dev/config.edn") ))))
 
 (defn start
   "Starts the current development system."
@@ -38,10 +39,18 @@
   (init)
   (start))
 
-(defn reset []
+(defn reset
+  "Stop any running components, reload all files and restart components."
+  []
   (stop)
   (info "Resetting...")
   (refresh :after 'user/go)
   (info "Reset complete")
   :reset-complete)
+
+(defn start-autotest
+  "Start auto testing for test/ruuvi. When a file is changed, dependant midje tests are executed."
+  []
+  (midje/autotest :dirs "test/ruuvi")
+  )
 
