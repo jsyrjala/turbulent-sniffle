@@ -8,8 +8,7 @@
    [io.aviso.rook.swagger :refer [SwaggerObject SwaggerOptions RoutingEntry PathItem]]
    [ring.middleware.content-type :refer [content-type-response]]
    [ring.middleware.not-modified :refer [not-modified-response]]
-   )
-  )
+   [ring.middleware.head :refer [head-response]]))
 
 (defn- routing-tag [routing-entry]
   "Get tag name from namespace metadata :swagger-tag.
@@ -54,8 +53,7 @@
    swagger-object :- SwaggerObject
    routing-entry :- RoutingEntry
    path-item-object :- PathItem]
-  (merge path-item-object {:tags [(routing-tag routing-entry)]})
-  )
+  (merge path-item-object {:tags [(routing-tag routing-entry)]}))
 
 (defn- swagger-ui-response
   "Reads and serves files for Swagger UI website from ring-swagger-ui.jar"
@@ -64,12 +62,10 @@
         req-path (.replaceAll uri (str "^" prefix) "")]
     (condp = req-path
       "" (r/redirect (str uri "/"))
-      "/" (r/resource-response (str base "/index.html"))
+      "/" (-> (r/resource-response (str base "/index.html"))
+              (r/update-header "Content-Type" (constantly "text/html")))
       "/conf.js" (r/response (str "window.API_CONF = {url: '" swagger-path "'};"))
-      (r/resource-response (str base req-path))
-      )
-    )
-  )
+      (r/resource-response (str base req-path)))))
 
 (defn wrap-swagger-ui
   "Middleware for serving Swagger UI web page.
@@ -81,11 +77,8 @@
        (swagger-ui-response uri prefix swagger-path)
        (not-modified-response req)
        (content-type-response req)
-       )
-      (handler req)
-      )
-    )
-  )
+       (head-response req))
+      (handler req))))
 
 (def swagger-options
   (-> sw/default-swagger-options

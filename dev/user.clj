@@ -51,6 +51,6 @@
 (defn start-autotest
   "Start auto testing for test/ruuvi. When a file is changed, dependant midje tests are executed."
   []
-  (midje/autotest :dirs "test/ruuvi")
+  (midje/autotest :dirs "test/ruuvi" "src/ruuvi")
   )
 
