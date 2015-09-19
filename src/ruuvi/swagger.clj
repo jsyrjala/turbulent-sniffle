@@ -39,14 +39,17 @@
          (map first))))
 
 (s/defn tagging-configurer :- SwaggerObject
-  "Decorates a SwaggerObject with the tags and descriptions (groupings in Swagger UI)."
+  "Decorates a SwaggerObject with the tags and descriptions.
+
+   Routes with same tag are grouped as a one block in Swagger UI."
   [swagger-options :- SwaggerOptions
    swagger-object :- SwaggerObject
    routing-entries :- [RoutingEntry]]
   (assoc swagger-object :tags (routing-tags routing-entries)))
 
 (s/defn tagging-operation-decorator :- PathItem
-  "Decorates a PathItemObject with the tag (grouping in Swagger UI)."
+  "Decorates a PathItemObject (route) with a tag.
+   Routes with same tag are grouped to same block in the Swagger UI."
   [swagger-options :- SwaggerOptions
    swagger-object :- SwaggerObject
    routing-entry :- RoutingEntry
@@ -54,8 +57,8 @@
   (merge path-item-object {:tags [(routing-tag routing-entry)]})
   )
 
-(defn swagger-ui-response
-  "Reads and serves swagger-ui from ring-swagger-ui.jar"
+(defn- swagger-ui-response
+  "Reads and serves files for Swagger UI website from ring-swagger-ui.jar"
   [uri prefix swagger-path]
   (let [base "/swagger-ui"
         req-path (.replaceAll uri (str "^" prefix) "")]
