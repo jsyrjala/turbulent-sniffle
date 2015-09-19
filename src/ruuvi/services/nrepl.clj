@@ -19,7 +19,7 @@
          (let [server (nrepl/start-server :port port)
                running-port (get-running-port server)]
            (debug "nREPL server running in port" port)
-           ;; Running port is zero here because nREPL binds the port asynchronously
+           ;; TODO Running port is zero here because nREPL binds the port asynchronously
            (assoc component :server server :server-port running-port)))
   (stop [component]
         (debug "NReplServer stopping")
