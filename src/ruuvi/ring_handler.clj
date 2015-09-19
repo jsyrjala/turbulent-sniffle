@@ -39,8 +39,10 @@
        {:context ["api"]
         :swagger-options swagger/swagger-options
         :default-middleware sv/wrap-with-schema-validation}
+       ["meta" 'ruuvi.resources.meta]
+       ["auth" 'ruuvi.resources.auth]
        ["events" 'ruuvi.resources.events]
-       ["auth" 'ruuvi.resources.auth])
+       )
 
       (wrap-authentication (sec/auth-backend auth-conf))
       rook/wrap-with-standard-middleware

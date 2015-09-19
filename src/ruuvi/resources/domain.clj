@@ -2,6 +2,14 @@
   [:require [schema.core :as s :refer [optional-key Int Str enum Any defschema]]]
 )
 
+;; Meta
+
+(defschema Pong
+  {:server String
+   :version String
+   :server_time java.util.Date})
+
+;; Events
 (defschema NewEvent
   {:version (enum "1")
    :tracker_code Str
@@ -25,10 +33,12 @@
    }
   )
 
+;; Auth
 (defschema Authentication
   {:username Str
    :password Str})
 
 (defschema AuthToken
   {:token Str})
+
 
