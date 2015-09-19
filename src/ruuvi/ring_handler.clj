@@ -47,8 +47,8 @@
       (wrap-authentication (sec/auth-backend auth-conf))
       rook/wrap-with-standard-middleware
       (rook/wrap-with-injections {:auth-conf auth-conf})
-      (swagger/wrap-swagger-ui "/doc" "/api/swagger.json")
       (middleware/wrap-request-logger request-counter)
+      (swagger/wrap-swagger-ui "/doc" "/api/swagger.json")
       middleware/wrap-x-forwarded-for
       (cors/wrap-cors
        :access-control-allow-origin #".*"
