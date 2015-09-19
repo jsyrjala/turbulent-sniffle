@@ -64,7 +64,8 @@
       "" (r/redirect (str uri "/"))
       "/" (-> (r/resource-response (str base "/index.html"))
               (r/update-header "Content-Type" (constantly "text/html")))
-      "/conf.js" (r/response (str "window.API_CONF = {url: '" swagger-path "'};"))
+      "/conf.js" (-> (r/response (str "window.API_CONF = {url: '" swagger-path "'};"))
+                     (r/update-header "ETag" (constantly swagger-path) ))
       (r/resource-response (str base req-path)))))
 
 (defn wrap-swagger-ui

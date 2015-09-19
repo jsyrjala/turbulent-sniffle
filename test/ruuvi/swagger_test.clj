@@ -32,4 +32,5 @@
                            {:uri "/doc/conf.js"} )]
               result => (contains {:status 200
                                    :body "window.API_CONF = {url: '/api/swagger.json'};"} )
-              (result :headers) => (contains {"Content-Type" "text/javascript"}))))
+              (result :headers) => (contains {"Content-Type" "text/javascript"
+                                              "ETag" "/api/swagger.json"}))))
