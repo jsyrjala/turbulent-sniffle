@@ -27,11 +27,6 @@
                 :private-key "test/auth_privkey.pem"
                 :public-key "test/auth_pubkey.pem"})
 
-
-(def wrap-rook-middlewares (rook/compose-middleware
-                            sv/wrap-with-schema-validation
-                            ))
-
 (def ^{:private true} request-counter (atom 0))
 
 (defn- create-app []
@@ -58,16 +53,21 @@
   )
 
 (defn- create-handler [component development]
-  (let [ app (server/construct-handler {:reload development
-                                        :track true
-                                        :exceptions development}
-                            #'create-app)
-        wrapped-app (rook/wrap-with-injections app component)]
     (if development
-      wrapped-app
-      (-> wrapped-app
-          middleware/wrap-exception-response))
-    ))
+      (-> (server/construct-handler {:reload true
+                                     :track true
+                                     :exceptions false}
+                                    #'create-app)
+          (rook/wrap-with-injections component)
+          middleware/wrap-request-id)
+
+      (-> (server/construct-handler {:track true
+                                     }
+                                    create-app)
+          (rook/wrap-with-injections component)
+          middleware/wrap-exception-response
+          middleware/wrap-request-id))
+    )
 
 (defrecord RingHandler [db development]
   component/Lifecycle

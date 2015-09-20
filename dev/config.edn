@@ -6,7 +6,7 @@
   :host "localhost"
   :port 7000
   }
- :development true
+ :development false
  :auth
  {
   :private-key "test/auth_privkey.pem"

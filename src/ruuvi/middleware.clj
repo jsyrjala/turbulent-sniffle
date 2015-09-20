@@ -5,7 +5,8 @@
             [ring.util.http-response :as r]
             [ring.middleware.json :refer [wrap-json-response]]
             [io.aviso.tracker :as tracker]
-            [cheshire.core :as json]))
+            [cheshire.core :as json]
+            [clj-uuid :as uuid]))
 
 (defn wrap-x-forwarded-for
   "Replace value of remote-addr -header with value of X-Forwarded-for -header if available."
@@ -20,6 +21,7 @@
   [handler request-counter]
   (fn wrap-request-logger-handler [request]
     (let [counter (swap! request-counter inc)
+          request-id (:request-id request)
           request-method (:request-method request)
           uri (:uri request)
           query-params (:query-params request)
@@ -29,11 +31,13 @@
                   (str ":query-params "  query-params)
                   "") ]
       (info (str "REQUEST:" counter)
+            request-id
             remote-addr request-method uri query)
       (let [response (handler request)
             duration (- (System/currentTimeMillis) start)
             status (:status response)]
         (info (str "RESPONSE:" counter)
+              request-id
               remote-addr
               status
               duration "msec")
@@ -42,17 +46,27 @@
 (defn wrap-exception-response
   "Catch exception and turn it to 500 Internal server exception."
   [handler]
-  (fn wrap-exception-response-handler [req]
+  (fn wrap-exception-response-handler [{:keys [request-id] :as req}]
     (try
-      (tracker/checkpoint "entry"
+      (tracker/checkpoint
         (handler req))
       (catch Throwable ex
         (->
           {:error "Internal server error"
            :description "Something bad happened in the server. It is our fault, not yours. Try again later."
-           :server-time (java.util.Date.)}
+           :server_time (java.util.Date.)
+           :request_id (req :request-id)}
           ;; wrap-exception-response is the last one to process exceptions
           ;; so it needs to return a string
           (json/generate-string {:pretty true})
           r/internal-server-error
           )))))
+
+(defn wrap-request-id
+   "Add request-id (UUID) to request map"
+   [handler]
+   (fn wrap-request-id-handler [request]
+     (let [request-id (uuid/to-string (uuid/v1))]
+       (tracker/track #(format  "Incoming request %s"  request-id)
+         (handler (assoc request :request-id request-id))))
+       ))
