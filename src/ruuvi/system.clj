@@ -11,7 +11,8 @@
 
 (defn create-system [config-file]
   (let [system-config (config/read-config config-file)
-        {:keys [database nrepl http-server]} system-config
+        {:keys [database nrepl http-server development]} system-config
+        ;; TODO not needed?
         database (-> system-config :database)
         {:keys [db-spec migration]} database
         ]
@@ -20,7 +21,7 @@
      :nrepl-server (ruuvi.services.nrepl/new-nrepl-server nrepl)
      :migration (using (ruuvi.database.migration/new-database-migration migration)
                        [:db])
-     :ring-handler (using (ruuvi.ring-handler/new-ring-handler)
+     :ring-handler (using (ruuvi.ring-handler/new-ring-handler development)
                           [:db])
      :http-server (using (ruuvi.services.http-server/new-http-server http-server)
                          [:ring-handler])

@@ -57,16 +57,29 @@
       )
   )
 
-(defrecord RingHandler [db]
+(defn- create-handler [component development]
+  (let [ app (server/construct-handler {:reload development
+                                        :track true
+                                        :exceptions development}
+                            #'create-app)
+        wrapped-app (rook/wrap-with-injections app component)]
+    (if development
+      wrapped-app
+      (-> wrapped-app
+          middleware/wrap-exception-response))
+    ))
+
+(defrecord RingHandler [db development]
   component/Lifecycle
   (start [component]
          (debug "RingHandler starting")
-         (let [app (create-app)
-               wrapped-app (rook/wrap-with-injections app component)]
-           (assoc component :app wrapped-app)))
+         (let [component-app (create-handler component development)]
+           (assoc component :app component-app)))
   (stop [component]
         (debug "RingHandler stopping")
         (dissoc component :app)))
 
-(defn new-ring-handler []
-  (map->RingHandler {}))
+(defn new-ring-handler
+  "Create a new RingHandler component."
+  [development]
+  (map->RingHandler {:development development}))
