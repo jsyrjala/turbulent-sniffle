@@ -6,7 +6,10 @@
             [ring.middleware.json :refer [wrap-json-response]]
             [io.aviso.tracker :as tracker]
             [cheshire.core :as json]
-            [clj-uuid :as uuid]))
+            [ring.util.http-response :as http-response]
+            [clj-uuid :as uuid])
+  (:import
+    [com.fasterxml.jackson.core JsonParseException]))
 
 (defn wrap-x-forwarded-for
   "Replace value of remote-addr -header with value of X-Forwarded-for -header if available."
@@ -70,3 +73,20 @@
        (tracker/track #(format  "Incoming request %s"  request-id)
          (handler (assoc request :request-id request-id))))
        ))
+
+
+
+(defn- bad-format-error-handler [exception _ _]
+  (if (instance? JsonParseException exception)
+    (http-response/bad-request {:error "Bad request" :description "Malformed data in request"})
+    (throw exception)))
+
+(defn wrap-with-standard-middleware
+  "The standard middleware that Rook expects to be present before it is passed the Ring request.
+  Request parsing will return 400 Bad request if request contains malformed data"
+  [handler]
+  (-> handler
+      (ring.middleware.format/wrap-restful-format :formats [:json-kw :edn]
+                                                  :request-error-handler bad-format-error-handler)
+      ring.middleware.keyword-params/wrap-keyword-params
+      ring.middleware.params/wrap-params))

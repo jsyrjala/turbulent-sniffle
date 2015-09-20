@@ -14,12 +14,13 @@
    [ring.middleware.cors :as cors]
    [ring.middleware.json :refer [wrap-json-body]]
    [ring.middleware.resource :refer [wrap-resource]]
+   [ring.middleware.format]
+   [ring.middleware.params]
    [buddy.auth.middleware :refer [wrap-authentication]]
 
    [ruuvi.swagger :as swagger]
    [ruuvi.middleware :as middleware]
    [ruuvi.security :as sec]
-
    )
   )
 
@@ -40,7 +41,8 @@
        )
 
       (wrap-authentication (sec/auth-backend auth-conf))
-      rook/wrap-with-standard-middleware
+      middleware/wrap-with-standard-middleware
+
       (rook/wrap-with-injections {:auth-conf auth-conf})
       (middleware/wrap-request-logger request-counter)
       (swagger/wrap-swagger-ui "/doc" "/api/swagger.json")
