@@ -9,3 +9,5 @@ create table users (
   );
 
 create unique index uix_users_username on users(username);
+create unique index uix_users_email on users(email);
+create index ix_users_username_email on users(username,email);

@@ -2,8 +2,9 @@
   (:require
    [clj-http.client :as client]
                [clojure.tools.logging :as log :refer [info debug]]
-
-   [ruuvi.system :refer [] :as system]
+   [ruuvi.system :as system]
+   [clojure.java.jdbc :as jdbc]
+   [ruuvi.database.migration :as migration]
    ))
 
 (def system nil)
@@ -15,7 +16,7 @@
     (:body (client/get url {:accept :json
                             :as :json}))))
 
-(defn init-system
+(defn create-system
   [config-file]
   (alter-var-root
    #'system
@@ -30,3 +31,14 @@
   (alter-var-root #'system
                   (fn [s] (when s (system/stop-system s)))))
 
+(defn init-system
+  [filename]
+  (create-system filename)
+  (start-system)
+  (-> system
+      :migration
+      migration/migrate)
+  (-> system
+      :db
+      (jdbc/execute! ["delete from users"])
+      ))

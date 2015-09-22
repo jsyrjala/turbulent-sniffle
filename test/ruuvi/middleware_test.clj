@@ -10,7 +10,7 @@
    :status 200})
 
 (defn- throw-handler [req]
-  (throw+ "ex" ))
+  (throw+ "intentional exception for unit-tests" ))
 
 (fact "wrap-exception-response converts exception to 500 Internal server error"
       (let [response ((wrap-exception-response throw-handler) {:request-id "dummy"})]
