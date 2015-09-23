@@ -5,6 +5,9 @@
     [ruuvi.test-util :as test-util :refer :all]
     ))
 
+(defn not-nil? [a]
+  (not= (nil? a)))
+
 (against-background
   [(before
      :contents
@@ -30,8 +33,20 @@
                                        :email "pete@example.com"})
         => (throws org.h2.jdbc.JdbcSQLException #"Unique index or primary key violation: \"UIX_USERS_EMAIL ON PUBLIC.USERS"))
 
+
+  (fact "get-user has last_login"
+        (let [user (get-user (-> system :db) "pete")]
+          user => (just {:id anything :username "pete" :email "pete@example.com"
+                         :created_at anything :updated_at anything})))
+
   (fact "authenticate-user authenticate when given correct email and password"
         (authenticate-user (-> system :db) "pete@example.com" "verysecret!") => true)
+
+  (fact "get-user has last_login and prev_login"
+        (let [user (get-user (-> system :db) "pete")]
+          user => (just {:id truthy :username "pete" :email "pete@example.com"
+                         :created_at anything :updated_at anything
+                         :last_login anything})))
 
   (fact "authenticate-user authenticate when given correct username and password"
         (authenticate-user (-> system :db) "pete" "verysecret!") => true)

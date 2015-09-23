@@ -4,8 +4,15 @@
     [clojure.java.jdbc :as jdbc]
     [clojure.tools.logging :refer [trace debug info warn] :as log]
     [clj-time.coerce :as time-conv]
+    [clj-time.core :as time]
     )
   )
+
+(defn sql-now
+  "Return current time as sql timestamp"
+  []
+  (-> (time/now)
+      time-conv/to-timestamp))
 
 (defn to-sql-data
   "Converts domain data to database/jdbc compatible format.
