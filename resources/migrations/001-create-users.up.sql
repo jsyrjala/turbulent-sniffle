@@ -6,6 +6,8 @@ create table users (
   email varchar(256),
   last_login timestamp,
   prev_login timestamp,
+  last_failed_login timestamp,
+  failed_login_count integer not null default 0,
   updated_at timestamp not null default now(),
   created_at timestamp not null default now()
   );

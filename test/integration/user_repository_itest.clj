@@ -5,23 +5,24 @@
     [ruuvi.test-util :as test-util :refer :all]
     ))
 
-(defn not-nil? [a]
-  (not= (nil? a)))
-
 (against-background
   [(before
      :contents
      (test-util/init-system "test/data/system-config.edn"))
    (after
      :contents
-     (test-util/stop-system))
-   ]
+     (test-util/stop-system))]
 
   (fact "create-user! creates an user"
         (let [user (create-user! (-> system :db) {:username "pete" :password "verysecret!"
                                                   :email "pete@example.com"})]
           user => (contains {:id integer? :username "pete" :email "pete@example.com" :created_at anything :updated_at anything})
-          (keys user) =>  (just #{:id :username :email :created_at :updated_at}) ))
+          (keys user) =>  (just #{:id :username :email :created_at :updated_at :failed_login_count}) ))
+
+  (fact "get-user returns the user"
+        (let [user (get-user (-> system :db) "pete")]
+          user => (just {:id anything :username "pete" :email "pete@example.com"
+                         :created_at anything :updated_at anything :failed_login_count 0})))
 
   (fact "create-user! throws exception when trying to create duplicate username"
         (create-user! (-> system :db) {:username "pete" :password "hubbabubba"
@@ -33,29 +34,27 @@
                                        :email "pete@example.com"})
         => (throws org.h2.jdbc.JdbcSQLException #"Unique index or primary key violation: \"UIX_USERS_EMAIL ON PUBLIC.USERS"))
 
+  (fact "authenticate-user authenticate when given correct username and password"
+        (authenticate-user (-> system :db) "pete" "verysecret!") => true)
 
   (fact "get-user has last_login"
         (let [user (get-user (-> system :db) "pete")]
           user => (just {:id anything :username "pete" :email "pete@example.com"
-                         :created_at anything :updated_at anything})))
+                         :created_at anything :updated_at anything :failed_login_count 0
+                         :last_login anything})))
 
   (fact "authenticate-user authenticate when given correct email and password"
         (authenticate-user (-> system :db) "pete@example.com" "verysecret!") => true)
 
   (fact "get-user has last_login and prev_login"
         (let [user (get-user (-> system :db) "pete")]
-          user => (just {:id truthy :username "pete" :email "pete@example.com"
+          user => (just {:id anything :username "pete" :email "pete@example.com"
                          :created_at anything :updated_at anything
-                         :last_login anything})))
-
-  (fact "authenticate-user authenticate when given correct username and password"
-        (authenticate-user (-> system :db) "pete" "verysecret!") => true)
+                         :failed_login_count 0
+                         :last_login anything :prev_login anything})))
 
   (fact "authenticate-user authenticate ignores white space in username"
         (authenticate-user (-> system :db) " pete \t" "verysecret!") => true)
-
-  (fact "authenticate-user authenticate when given correct username with case variation"
-        (authenticate-user (-> system :db) "PeTe" "verysecret!") => true)
 
   (fact "authenticate-user authenticate when given correct email with case variation and password"
         (authenticate-user (-> system :db) "PeTe@eXaMpLe.CoM" "verysecret!") => true)
@@ -63,8 +62,23 @@
   (fact "authenticate-user doesn't authenticate when given correct username with bad password"
         (authenticate-user (-> system :db) "pete" "wrongpass?") => false)
 
+  (fact "get-user has failed login count 1 after failed login"
+        (let [user (get-user (-> system :db) "pete")]
+          user => (just {:id anything :username "pete" :email "pete@example.com"
+                         :created_at anything :updated_at anything
+                         :last_login anything :prev_login anything
+                         :failed_login_count 1
+                         :last_failed_login anything})))
+
   (fact "authenticate-user doesn't authenticate when given correct email with bad password"
         (authenticate-user (-> system :db) "pete@example.com" "wrongpass?") => false)
+
+  (fact "get-user has failed login count 2 after second failed login"
+        (let [user (get-user (-> system :db) "pete")]
+          user => (just {:id truthy :username "pete" :email "pete@example.com"
+                         :created_at anything :updated_at anything
+                         :last_login anything :prev_login anything
+                         :failed_login_count 2 :last_failed_login anything})))
 
   (fact "authenticate-user doesn't authenticate when user is not found"
         (authenticate-user (-> system :db) "john@example.com" "verysecret!") => false)
@@ -72,8 +86,13 @@
   (fact "authenticate-user doesn't authenticate when given nil password"
         (authenticate-user (-> system :db) "pete@example.com" nil) => false)
 
+  (fact "authenticate-user authenticate when given correct username with case variation"
+        (authenticate-user (-> system :db) "PeTe" "verysecret!") => true)
+
+  (fact "get-user has failed login count 0 after successful login"
+        (let [user (get-user (-> system :db) "pete")]
+          user => (just {:id truthy :username "pete" :email "pete@example.com"
+                         :created_at anything :updated_at anything
+                         :last_login anything :prev_login anything
+                         :failed_login_count 0 :last_failed_login anything})))
   )
-
-
-
-

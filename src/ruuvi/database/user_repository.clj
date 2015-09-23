@@ -24,7 +24,17 @@
 (defn- update-last-login! [conn user]
   ;; TODO pass to this some genering func in db-util
   (jdbc/execute! conn
-                 ["update users set prev_login = last_login, last_login = ? where id = ?"
+                 ["update users set
+                  failed_login_count = 0, prev_login = last_login, last_login = ?
+                  where id = ?"
+                  (db-util/sql-now) (user :id)]))
+
+(defn- update-failed-login! [conn user]
+  (jdbc/execute! conn
+                 ["update users set
+                  failed_login_count = failed_login_count + 1,
+                  last_failed_login = ?
+                  where id = ?"
                   (db-util/sql-now) (user :id)]))
 
 (defn- handle-user-authenticated [conn user]
@@ -34,6 +44,7 @@
 
 (defn- handle-auth-fail [conn user]
   (info "User" (-> user :username) "failed to authenticate. Bad password.")
+  (update-failed-login! conn user)
   false)
 
 (defn- handle-user-found [conn user password]
