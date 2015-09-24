@@ -38,7 +38,8 @@
 (defn- handle-user-authenticated [conn user]
   (info "User" (-> user :username) "authenticated successfully.")
   (update-last-login! conn user)
-  true)
+  ;; TODO token should be done here
+  (dissoc user :password_hash))
 
 (defn- handle-auth-fail [conn user]
   (info "User" (-> user :username) "failed to authenticate. Bad password.")

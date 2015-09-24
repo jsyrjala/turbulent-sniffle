@@ -35,7 +35,7 @@
         => (throws org.h2.jdbc.JdbcSQLException #"Unique index or primary key violation: \"UIX_USERS_EMAIL ON PUBLIC.USERS"))
 
   (fact "authenticate-user authenticate when given correct username and password"
-        (authenticate-user (db) "pete" "verysecret!") => true)
+        (authenticate-user (db) "pete" "verysecret!") => truthy)
 
   (fact "get-user has last_login"
         (let [user (get-user (db) "pete")]
@@ -44,7 +44,7 @@
                          :last_login anything})))
 
   (fact "authenticate-user authenticate when given correct email and password"
-        (authenticate-user (db) "pete@example.com" "verysecret!") => true)
+        (authenticate-user (db) "pete@example.com" "verysecret!") => truthy)
 
   (fact "get-user has last_login and prev_login"
         (let [user (get-user (db) "pete")]
@@ -54,10 +54,10 @@
                          :last_login anything :prev_login anything})))
 
   (fact "authenticate-user authenticate ignores white space in username"
-        (authenticate-user (db) " pete \t" "verysecret!") => true)
+        (authenticate-user (db) " pete \t" "verysecret!") => truthy)
 
   (fact "authenticate-user authenticate when given correct email with case variation and password"
-        (authenticate-user (db) "PeTe@eXaMpLe.CoM" "verysecret!") => true)
+        (authenticate-user (db) "PeTe@eXaMpLe.CoM" "verysecret!") => truthy)
 
   (fact "authenticate-user doesn't authenticate when given correct username with bad password"
         (authenticate-user (db) "pete" "wrongpass?") => false)
@@ -89,7 +89,7 @@
         (authenticate-user (db) "pete@example.com" nil) => false)
 
   (fact "authenticate-user authenticate when given correct username with case variation"
-        (authenticate-user (db) "PeTe" "verysecret!") => true)
+        (authenticate-user (db) "PeTe" "verysecret!") => truthy)
 
   (fact "get-user has failed login count 0 after successful login"
         (let [user (get-user (db) "pete")]
