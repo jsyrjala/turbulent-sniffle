@@ -9,6 +9,8 @@
 
 (def system nil)
 
+(defn db [] (-> system :db))
+
 (defn get-url [path]
   (let [http-server (-> system :http-server)
         port (-> http-server :server-port)

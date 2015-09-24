@@ -1,11 +1,10 @@
 (ns ruuvi.database.user-repository
+  "User repository"
   (:require
-    [clojure.tools.logging :refer [trace debug info warn] :as log]
+    [clojure.tools.logging :refer [trace debug info warn]]
     [ruuvi.database.db-util :as db-util]
     [clojure.string :as s]
-    [clojure.java.jdbc :as jdbc]
-    [buddy.hashers :as hs])
-  )
+    [buddy.hashers :as hs] ))
 
 (defn- clean-string [s]
   (if (nil? s)
@@ -22,20 +21,19 @@
     (db-util/insert! conn :users user)))
 
 (defn- update-last-login! [conn user]
-  ;; TODO pass to this some genering func in db-util
-  (jdbc/execute! conn
-                 ["update users set
-                  failed_login_count = 0, prev_login = last_login, last_login = ?
-                  where id = ?"
-                  (db-util/sql-now) (user :id)]))
+  (db-util/update! conn
+                   "update users set
+                    failed_login_count = 0, prev_login = last_login, last_login = ?
+                    where id = ?"
+                    [(db-util/sql-now) (user :id)]))
 
 (defn- update-failed-login! [conn user]
-  (jdbc/execute! conn
-                 ["update users set
-                  failed_login_count = failed_login_count + 1,
-                  last_failed_login = ?
-                  where id = ?"
-                  (db-util/sql-now) (user :id)]))
+  (db-util/update! conn
+                   "update users set
+                    failed_login_count = failed_login_count + 1,
+                    last_failed_login = ?
+                    where id = ?"
+                   [(db-util/sql-now) (user :id)]))
 
 (defn- handle-user-authenticated [conn user]
   (info "User" (-> user :username) "authenticated successfully.")
@@ -73,3 +71,6 @@
   (let [username (clean-string username)]
     (db-util/get-row conn :users ["email = ? or username = ?"
                                   username username])))
+
+(defn get-user-by-id [conn id]
+  (db-util/get-by-id conn :users id))

@@ -2,11 +2,9 @@
   (:require
     [java-jdbc.sql :as sql]
     [clojure.java.jdbc :as jdbc]
-    [clojure.tools.logging :refer [trace debug info warn] :as log]
+    [clojure.tools.logging :refer [trace debug info warn]]
     [clj-time.coerce :as time-conv]
-    [clj-time.core :as time]
-    )
-  )
+    [clj-time.core :as time] ))
 
 (defn sql-now
   "Return current time as sql timestamp"
@@ -27,7 +25,6 @@
              domain-map)))
 
 (defn map-func
-  ;; TODO better doc
   "When data is a sequence map-func is equal to map.
   Otherwise map-func is equal to func."
   [func data]
@@ -104,7 +101,11 @@
 (defn get-by-id [conn table id]
   (get-row conn table ["id = ?" id]))
 
-(defn insert! [conn table data]
+(defn insert!
+  "Execute database insert.
+
+  (insert! conn :users {:username \"pete\" :email \"pete@example.com\")"
+  [conn table data]
   (let [sql-data (to-sql-data data)
         _   (debug "insert!" table (log-clean sql-data))
         row (first (jdbc/insert! conn table sql-data))
@@ -117,6 +118,15 @@
     ;; TODO optimize: some dbs return full row, return it directly
     ;; you need this to get created_at and updated_at fields
     (to-domain (get-by-id conn table id))))
+
+(defn update!
+  "Execute database update.
+
+  (update! conn \"update foo set x = 1 where a = ? and b = ?\" [1 2])"
+  [conn sql params]
+  (debug "update!" sql params)
+  (let [paramv (into [sql] params)]
+    (jdbc/execute! conn paramv)))
 
 
 
