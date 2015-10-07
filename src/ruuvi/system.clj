@@ -6,12 +6,15 @@
             [ruuvi.services.nrepl]
             [ruuvi.services.http-server]
             [ruuvi.ring-handler]
+            [ruuvi.util]
             )
   )
 
+(ruuvi.util/add-json-encoders)
+
 (defn create-system [config-file]
   (let [system-config (config/read-config config-file)
-        {:keys [database nrepl http-server development]} system-config
+        {:keys [nrepl http-server development]} system-config
         ;; TODO not needed?
         database (-> system-config :database)
         {:keys [db-spec migration]} database

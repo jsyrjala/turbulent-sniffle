@@ -29,6 +29,7 @@
    [org.clojure/tools.cli "0.3.3"]
    [org.clojure/tools.nrepl "0.2.11"]
    [danlentz/clj-uuid "0.1.6"]
+   [slingshot "0.12.2"]
 
    ;; security
    [buddy/buddy-auth "0.6.2"]

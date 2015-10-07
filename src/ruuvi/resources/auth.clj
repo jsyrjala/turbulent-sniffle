@@ -5,7 +5,6 @@
   (:require
    [ruuvi.resources.domain :as domain]
    [ruuvi.security :as sec]
-   [buddy.hashers :as hs]
    [clojure.tools.logging :refer [info debug]]
    [ring.util.http-response :as r]
    [ring.util.http-status :as status]
@@ -19,6 +18,7 @@
 (defn- auth-success [user auth-conf]
   (let [claims (sec/user-claims user)
         token (sec/create-auth-token auth-conf claims)]
+    ;; store token to some storage
     (r/created token) ))
 
 (defn login

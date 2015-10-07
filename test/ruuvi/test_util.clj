@@ -31,6 +31,15 @@
                           headers))]
     (:body result) ))
 
+(defn put-url [path body & headers]
+  (let [url (create-url path)
+        result (http/put url (merge {:form-params body
+                                      :content-type :json
+                                      :as :json}
+                                     headers))]
+    result
+    ))
+
 (defn create-system
   [config-file]
   (alter-var-root

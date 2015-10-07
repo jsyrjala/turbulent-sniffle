@@ -40,6 +40,19 @@
    }
   )
 
+;; Users
+(defschema NewUser
+  {:username Str
+   :password Str
+   (optional-key :name) Str
+   (optional-key :email) Str})
+
+(defschema User
+  {:id                   Long
+   :username             Str
+   (optional-key :name)  Str
+   (optional-key :email) Str})
+
 ;; Auth
 (defschema Authentication
   {:username Str
