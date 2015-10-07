@@ -20,25 +20,22 @@
 
 (defn get-url [path]
   (let [url (create-url path)]
-    (:body (http/get url {:accept :json
-                          :as :json}))))
+    (http/get url {:accept :json
+                   :as :json})))
 
 (defn post-url [path body & headers]
-  (let [url (create-url path)
-        result (http/post url (merge {:form-params body
-                                      :content-type :json
-                                      :as :json}
-                          headers))]
-    (:body result) ))
+  (let [url (create-url path)]
+    (http/post url (merge {:form-params body
+                           :content-type :json
+                           :as :json}
+                          headers))))
 
 (defn put-url [path body & headers]
-  (let [url (create-url path)
-        result (http/put url (merge {:form-params body
-                                      :content-type :json
-                                      :as :json}
-                                     headers))]
-    result
-    ))
+  (let [url (create-url path)]
+    (http/put url (merge {:form-params body
+                          :content-type :json
+                          :as :json}
+                         headers))))
 
 (defn create-system
   [config-file]

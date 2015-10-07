@@ -14,7 +14,7 @@
             (keys test-util/system) => (contains [:db :http-server :nrepl-server :ring-handler]
                                                  :gaps-ok :in-any-order))
       (fact "Started server responds to PING"
-            (get-url "/meta/ping") => (contains {:server "RuuviServer", :version "0.0.1"}))
+            (:body (get-url "/meta/ping")) => (contains {:server "RuuviServer", :version "0.0.1"}))
 
       (stop-system)
       (fact "Stopped system contains components"
@@ -26,7 +26,7 @@
             (keys test-util/system) => (contains [:db :http-server :nrepl-server :ring-handler]
                                                  :gaps-ok :in-any-order))
       (fact "Re-started server responds to PING"
-            (get-url "/meta/ping") => (contains {:server "RuuviServer", :version "0.0.1"}))
+            (:body (get-url "/meta/ping")) => (contains {:server "RuuviServer", :version "0.0.1"}))
 
       (stop-system)
       (fact "Re started system can stop"

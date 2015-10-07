@@ -14,6 +14,11 @@
             :name "Kalle Kustaa"
             :email "kalle@example.com"})
 
+(defn http-error [status]
+  (fn [exception]
+    (let [data (.getData exception)]
+      (= (-> data :status) status))))
+
 (against-background
   [(before
      :contents
@@ -24,8 +29,7 @@
 
   (fact "PUT /api/users"
         (fact "creates a user"
-              (let [response (test-util/put-url "/users" user1)
-                    body (response :body)]
+              (let [{:keys [body]} (test-util/put-url "/users" user1)]
 
                 body => (contains {:username (user1 :username)
                                    :email    (user1 :email)
@@ -51,11 +55,9 @@
                                  {:username "123"
                                   :password "pw"
                                   :email "WiLLiam@eXample.Com"})
-              => (throws Exception))
+              => (throws Exception (http-error 500)))
         (fact "creates a user"
-              (let [response (test-util/put-url "/users" user2)
-                    body (response :body)]
-
+              (let [{:keys [body]} (test-util/put-url "/users" user2)]
                 body => (contains {:username (user2 :username)
                                    :email    (user2 :email)
                                    :name     (user2 :name)})))

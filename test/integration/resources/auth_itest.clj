@@ -30,13 +30,13 @@
                                                                       unauthorized?))
     (fact
       "returns auth token when authenticating with correct username and password"
-      (let [result (post-url "/auth" {:username "jim" :password "verysecret"})]
-        result => (just {:token anything})
+      (let [{:keys [body]} (post-url "/auth" {:username "jim" :password "verysecret"})]
+        body => (just {:token anything})
         ))
     (fact
       "returns auth token when authenticating with another correct username and password"
-      (let [result (post-url "/auth" {:username "john" :password "secretpass"})]
-        result => (just {:token anything})
+      (let [{:keys [body]} (post-url "/auth" {:username "john" :password "secretpass"})]
+        body => (just {:token anything})
         ))
     )
   )
