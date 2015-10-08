@@ -7,9 +7,11 @@
             [io.aviso.tracker :as tracker]
             [cheshire.core :as json]
             [ring.util.http-response :as http-response]
-            [clj-uuid :as uuid])
+            [clj-uuid :as uuid]
+            [slingshot.slingshot :refer [try+ throw+]])
   (:import
-    [com.fasterxml.jackson.core JsonParseException]))
+    [com.fasterxml.jackson.core JsonParseException]
+    [clojure.lang IExceptionInfo ExceptionInfo]))
 
 (defn wrap-x-forwarded-for
   "Replace value of remote-addr -header with value of X-Forwarded-for -header if available."
@@ -46,24 +48,52 @@
               duration "msec")
         response) )))
 
+(defn- error-response [req error description]
+  (->
+    {:error       error
+     :description description
+     :server_time (java.util.Date.)
+     :request_id  (req :request-id)}
+    (json/generate-string {:pretty true})))
+
+(defn- handle-internal-error [ex req]
+  ;; TODO log requestId, if available
+  (error "Interal error" ex)
+  (->
+    (error-response req "Internal server error" "Something bad happened in the server. It is our fault, not yours. Try again later.")
+    r/internal-server-error))
+
+(defn- handle-normal-exception
+  "Normal exception (throw+ {:error :some-error-code})"
+  [^IExceptionInfo ex req]
+  (let [{:keys [error description]} (.getData ex)]
+    (-> (error-response req error description)
+        r/internal-server-error)))
+
+(defn- handle-tracked-exception [^IExceptionInfo ex req]
+  (let [cause (.getCause ex)]
+    ;; if cause is IExceptionInfo that has :error data it is normal application exception
+    ;; and its :error and :description fields can be shown to user
+    (if (instance? IExceptionInfo cause)
+      (let [data (.getData cause)]
+        (if (-> data :error)
+          (handle-normal-exception cause req)
+          (handle-internal-error cause req)))
+      (handle-internal-error cause req))))
+
 (defn wrap-exception-response
-  "Catch exception and turn it to 500 Internal server exception."
+  "Catch exception and turn them to error responses."
   [handler]
-  (fn wrap-exception-response-handler [{:keys [request-id] :as req}]
+  (fn wrap-exception-response-handler [req]
     (try
       (tracker/checkpoint
         (handler req))
+      (catch ExceptionInfo ex-info
+        ;; tracker/checkpoint wraps all exceptions in ex-info
+        (handle-tracked-exception ex-info req))
       (catch Throwable ex
-        (->
-          {:error "Internal server error"
-           :description "Something bad happened in the server. It is our fault, not yours. Try again later."
-           :server_time (java.util.Date.)
-           :request_id (req :request-id)}
-          ;; wrap-exception-response is the last one to process exceptions
-          ;; so it needs to return a string
-          (json/generate-string {:pretty true})
-          r/internal-server-error
-          )))))
+        ;; should not ever happen, but just in case
+        (handle-internal-error ex req)))))
 
 (defn wrap-request-id
    "Add request-id (UUID) to request map"
@@ -73,8 +103,6 @@
        (tracker/track #(format  "Incoming request %s"  request-id)
          (handler (assoc request :request-id request-id))))
        ))
-
-
 
 (defn- bad-format-error-handler [exception _ _]
   (if (instance? JsonParseException exception)

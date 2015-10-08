@@ -4,7 +4,8 @@
     [clojure.tools.logging :refer [trace debug info warn]]
     [ruuvi.database.db-util :as db-util]
     [clojure.string :as s]
-    [buddy.hashers :as hs] ))
+    [buddy.hashers :as hs]
+    [slingshot.slingshot :refer [try+ throw+]]))
 
 (defn- clean-string [s]
   (if (nil? s)
@@ -18,7 +19,15 @@
                  (update-in [:username] clean-string)
                  (update-in [:email] clean-string))
         user (assoc user :password_hash (hs/encrypt password))]
-    (db-util/insert! conn :users user)))
+    (try+
+      (db-util/insert! conn :users user)
+      (catch java.sql.SQLException e
+        ;; TODO check that unique constraint was hit
+        ;; TODO move this check to db-util?
+        (info "Failed to create user" (user :username) (user :email) "assuming due constraint.")
+        (throw+ {:error :user-already-exists
+                 :description "User already exists"})))
+        ))
 
 (defn- update-last-login! [conn user]
   (db-util/update! conn

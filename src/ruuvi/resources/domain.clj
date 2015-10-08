@@ -14,6 +14,8 @@
 (defschema ErrorResponse
   {:error String
    (optional-key :description) String
+   :request_id String
+   :server_time java.util.Date
    Any Any})
 
 ;; Events

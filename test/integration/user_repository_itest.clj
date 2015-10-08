@@ -3,7 +3,13 @@
     [ruuvi.database.user-repository :refer :all]
     [midje.sweet :refer :all]
     [ruuvi.test-util :as test-util :refer :all]
+    [clojure.tools.logging :refer [info debug]]
     ))
+
+(defn exception [error]
+  (fn [ex]
+    (let [data (.getData ex)]
+      (and (= (data :error) error)))))
 
 (against-background
   [(before
@@ -27,12 +33,12 @@
   (fact "create-user! throws exception when trying to create duplicate username"
         (create-user! (db) {:username "pete" :password "hubbabubba"
                                        :email "somebodyother@example.com"})
-        => (throws org.h2.jdbc.JdbcSQLException #"Unique index or primary key violation: \"UIX_USERS_USERNAME ON PUBLIC.USERS"))
+        => (throws (exception :user-already-exists)))
 
   (fact "create-user! throws exception when trying to create duplicate email"
         (create-user! (db) {:username "john" :password "hubbabubba"
                                        :email "pete@example.com"})
-        => (throws org.h2.jdbc.JdbcSQLException #"Unique index or primary key violation: \"UIX_USERS_EMAIL ON PUBLIC.USERS"))
+        => (throws (exception :user-already-exists)))
 
   (fact "authenticate-user authenticate when given correct username and password"
         (authenticate-user (db) "pete" "verysecret!") => truthy)
