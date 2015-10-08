@@ -1,7 +1,7 @@
 (ns ruuvi.resources.users
-  "Authentication resources"
-  {:swagger-tag "Authentication"
-   :swagger-summary "Resources for obtaining and revoking authentication tokens. I.e login/logout."}
+  "User resources"
+  {:swagger-tag "Users"
+   :swagger-summary "Resources querying, registering and managing users."}
   (:require
     [ruuvi.resources.domain :as domain]
     [ruuvi.security :as sec]
