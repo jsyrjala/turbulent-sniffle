@@ -128,7 +128,7 @@
   (let [paramv (into [sql] params)]
     (jdbc/execute! conn paramv)))
 
-
+(defn current-sql-timestamp [] (java.sql.Timestamp. (System/currentTimeMillis)))
 
 
 

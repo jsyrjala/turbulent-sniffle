@@ -6,6 +6,7 @@ create table trackers (
   owner_id bigint not null,
   public boolean not null default false,
   shared_secret varchar(64),
+  -- TODO password_hash
   password varchar(64),
   name varchar(256),
   description varchar(256),

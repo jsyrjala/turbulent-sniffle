@@ -23,7 +23,7 @@
   {:version (enum "1")
    :tracker_code Str
    (optional-key :session_code) Str
-   (optional-key :time) String
+   (optional-key :time) java.util.Date
    (optional-key :nonce) String
    ;; TODO support also decimal
    (optional-key :latitude) String
@@ -38,6 +38,7 @@
    (optional-key :temperature) Double
    (optional-key :annotation) String
    (optional-key :mac) String
+   (optional-key :password) String
    Any                   Any
    }
   )
@@ -53,7 +54,13 @@
   {:id                   Long
    :username             Str
    (optional-key :name)  Str
-   (optional-key :email) Str})
+   (optional-key :email) Str
+   (optional-key :created_at) java.util.Date
+   (optional-key :updated_at) java.util.Date
+   (optional-key :prev_login) java.util.Date
+   (optional-key :last_login) java.util.Date
+   (optional-key :failed_login_count) Int
+   })
 
 ;; Auth
 (defschema Authentication
@@ -61,6 +68,7 @@
    :password Str})
 
 (defschema AuthToken
-  {:token Str})
+  {:token Str
+   :user User})
 
 

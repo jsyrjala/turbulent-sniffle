@@ -16,15 +16,15 @@
                    :description "Bad credentials"}) )
 
 (defn- auth-success [user auth-conf]
-  (let [claims (sec/user-claims user)
-        token (sec/create-auth-token auth-conf claims)]
+  (let [token (sec/create-auth-token auth-conf user)]
     ;; store token to some storage
-    (r/created token) ))
+    (r/created {:token token
+                :user user}) ))
 
 (defn login
   "Authenticate and obtain auth token"
   {:summary "Authenticate and obtain auth token"
-   :route [:post]
+   :route [:post ["login"]]
    :body-schema domain/Authentication
    :responses {status/ok domain/AuthToken
                status/unauthorized domain/ErrorResponse }}

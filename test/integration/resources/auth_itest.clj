@@ -19,23 +19,23 @@
      (test-util/stop-system))]
 
   (fact
-    "POST /api/auth"
+    "POST /api/auth/login"
     (fact
       "returns with status 401 authenticating with non existing username"
-      (post-url "/auth" {:username "does-not-exist" :password "bar"}) => (throws clojure.lang.ExceptionInfo
+      (post-url "/auth/login" {:username "does-not-exist" :password "bar"}) => (throws clojure.lang.ExceptionInfo
                                                                                  unauthorized?))
     (fact
       "returns with status 401 authenticating with bad password"
-      (post-url "/auth" {:username "jim" :password "bar"}) => (throws clojure.lang.ExceptionInfo
+      (post-url "/auth/login" {:username "jim" :password "bar"}) => (throws clojure.lang.ExceptionInfo
                                                                       unauthorized?))
     (fact
       "returns auth token when authenticating with correct username and password"
-      (let [{:keys [body]} (post-url "/auth" {:username "jim" :password "verysecret"})]
+      (let [{:keys [body]} (post-url "/auth/login" {:username "jim" :password "verysecret"})]
         body => (just {:token anything})
         ))
     (fact
       "returns auth token when authenticating with another correct username and password"
-      (let [{:keys [body]} (post-url "/auth" {:username "john" :password "secretpass"})]
+      (let [{:keys [body]} (post-url "/auth/login" {:username "john" :password "secretpass"})]
         body => (just {:token anything})
         ))
     )

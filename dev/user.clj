@@ -5,6 +5,7 @@
             [com.stuartsierra.component :as component]
             [clojure.tools.namespace.repl :refer [refresh refresh-all]]
             [midje.repl :as midje]
+            [ruuvi.database.migration :as migration]
             ))
 
 (def system nil)
@@ -54,3 +55,8 @@
   (midje/autotest :dirs "test/ruuvi" "src/ruuvi")
   )
 
+(defn database-reset
+  ""
+  []
+  (println (-> system :migration migration/migrate))
+  )
