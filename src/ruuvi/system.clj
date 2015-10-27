@@ -5,17 +5,16 @@
             [ruuvi.database.migration]
             [ruuvi.services.nrepl]
             [ruuvi.services.http-server]
+            [ruuvi.services.aleph-http-server]
             [ruuvi.ring-handler]
             )
   )
 
 (defn create-system [config-file]
   (let [system-config (config/read-config config-file)
-        {:keys [database nrepl http-server development]} system-config
-        ;; TODO not needed?
+        {:keys [nrepl http-server development]} system-config
         database (-> system-config :database)
-        {:keys [db-spec migration]} database
-        ]
+        {:keys [db-spec migration]} database]
     (component/system-map
      :db (ruuvi.database.connection/new-db-pool db-spec)
      :nrepl-server (ruuvi.services.nrepl/new-nrepl-server nrepl)
@@ -23,7 +22,10 @@
                        [:db])
      :ring-handler (using (ruuvi.ring-handler/new-ring-handler development)
                           [:db])
-     :http-server (using (ruuvi.services.http-server/new-http-server http-server)
+     ;; :http-server (using (ruuvi.services.http-server/new-http-server http-server)
+     ;;                    [:ring-handler])
+
+     :http-server (using (ruuvi.services.aleph-http-server/new-http-server http-server)
                          [:ring-handler])
      )))
 
