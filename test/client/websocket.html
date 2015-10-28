@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket tester</title>
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/lodash.min.js"></script>
+    <style>
+        li {
+            list-style: none;
+
+        }
+        .green {
+            color: green;
+        }
+        .blue {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+<h1>WebSocket tester</h1>
+<form>
+    <div>
+        <button id="connect">Connect</button>
+        <button id="close">Close</button>
+    </div>
+    <div>
+        <input type="input" id="msg" />
+        <button id="send">Send</button>
+    </div>
+    <h2>Log</h2>
+    <ul id="log">
+
+    </ul>
+</form>
+<script>
+    var ws, buffer = []
+    var STATE = {
+        connecting: 0,
+        open: 1,
+        closing: 2,
+        closed: 3
+    }
+    var url = 'ws:localhost:7000/api/websocket'
+
+    // websocket event handlers
+    function onOpen(event) {
+        console.log('Open: ', event)
+        _.forEach(buffer, function(msg) {
+            sendToSocket(msg)
+        })
+        buffer = []
+        addToLog('Connected to ' + url)
+    }
+    function onClose(event) {
+        console.log('Close: ', event)
+        addToLog('Closed connection')
+    }
+    function onMessage(event) {
+        var msg = event.data
+        console.log('Got message: ', msg)
+        addToLog(msg, 'blue')
+    }
+    function onError(event) {
+        if(event instanceof CloseEvent) {
+            onClose(event)
+            return
+        }
+        console.log('Error: ', event)
+    }
+    function onAbort(event) {
+        console.log('Abort: ', event)
+    }
+    // log operations
+    function addToLog(msg, color) {
+        $('#log').prepend('<li class="' + color + '"><pre>' + timestamp() + '  ' + msg + '</pre></li>')
+        while($('#log li').length > 100) {
+            $('#log li:last-child').remove()
+        }
+    }
+    function timestamp() {
+        var date = new Date();
+        return ('0' + date.getHours()).slice(-2) +
+                ':' + ('0' + date.getMinutes()).slice(-2) +
+                ':' + ('0' + date.getSeconds()).slice(-2) +
+                '.' + ('00' + date.getMilliseconds()).slice(-3);
+    }
+    // sending operation
+    function sendToSocket(msg) {
+        console.info('Sending data: ', msg)
+        ws.send(msg)
+        addToLog(msg, 'green')
+    }
+    // ui operations
+    function send() {
+        if(!ws) {
+            connect()
+        }
+        var msg = $('#msg').val()
+        if(ws.readyState != STATE.open) {
+            console.info('Buffering message:', msg)
+            buffer.push(msg)
+        } else {
+            try {
+                sendToSocket(msg)
+            } catch (e) {
+                console.error(e)
+            }
+        }
+        return false
+    }
+    function connect() {
+        if(ws) {
+            close()
+        }
+        console.info('Connecting to ' + url)
+        ws = new WebSocket(url)
+        ws.onmessage = onMessage
+        ws.onopen = onOpen
+        ws.onclose = onClose
+        ws.onclose = onError
+        ws.onabort = onAbort
+        return false
+    }
+    function close() {
+        if(ws) {
+            console.info('Closing connection')
+            ws.close()
+            ws = undefined
+        }
+        return false
+    }
+    function init() {
+        $('#send').click(send)
+        $('#connect').click(connect)
+        $('#close').click(close)
+    }
+
+    $(init);
+</script>
+</body>
+</html>
