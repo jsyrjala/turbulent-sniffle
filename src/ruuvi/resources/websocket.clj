@@ -7,7 +7,7 @@
     [ring.util.http-response :as r]
     [ring.util.http-status :as status]
     [aleph.http :as http]
-
+    [manifold.bus :as bus]
     [manifold.stream :as s]
     [manifold.deferred :as d]
     )
@@ -18,6 +18,34 @@
   {:status 400
    :headers {"content-type" "application/json"}
    :body "Expected a websocket request."})
+
+
+(def chatrooms (bus/event-bus))
+(defn- chat-handler
+  [req]
+  (d/let-flow [conn (d/catch
+                      (http/websocket-connection req)
+                      (fn [_] nil))]
+              (if-not conn
+                ;; if it wasn't a valid websocket handshake, return an error
+                non-websocket-request
+                ;; otherwise, take the first two messages, which give us the chatroom and name
+                (d/let-flow [_  (s/put! conn "Hello this is chat!")
+                             room (s/take! conn)
+                             _ (s/put! conn (str "server: your room is " room))
+                             name (s/take! conn)
+                             _ (s/put! conn (str "server: your name is " name))
+                             ]
+                            ;; take all messages from the chatroom, and feed them to the client
+                            (s/connect
+                              (bus/subscribe chatrooms room)
+                              conn)
+                            ;; take all messages from the client, prepend the name, and publish it to the room
+                            (s/consume
+                              #(bus/publish! chatrooms room %)
+                              (->> conn
+                                   (s/map #(str name ": " %))
+                                   (s/buffer 100)))))))
 
 (defn- websocket-connection-handler
   "This is another asynchronous handler, but uses `let-flow` instead of `chain` to define the
@@ -41,5 +69,5 @@
   [handler uri]
   (fn [req]
     (if (= (-> req :uri) uri)
-      (websocket-connection-handler req)
+      (chat-handler req)
       (handler req))))

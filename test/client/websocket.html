@@ -20,7 +20,7 @@
 </head>
 <body>
 <h1>WebSocket tester</h1>
-<form>
+<form id="form">
     <div>
         <button id="connect">Connect</button>
         <button id="close">Close</button>
@@ -145,6 +145,17 @@
         $('#send').click(send)
         $('#connect').click(connect)
         $('#close').click(close)
+        $('#form').submit(function(event) {
+            event.preventDefault()
+            return false
+        })
+        $('#msg').keypress(function(event) {
+            if(event.keyCode == 13) {
+                event.preventDefault()
+                return send(event)
+            }
+            return true
+        });
     }
 
     $(init);
