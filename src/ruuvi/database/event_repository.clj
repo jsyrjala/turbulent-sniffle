@@ -24,7 +24,7 @@
 (defn update-session-activity! [conn session-id timestamp]
   (jdbc/execute! conn
                  ["update event_sessions
-                 set latest_event_time = greatest(?, latest_event_time), updated_at = current_timestamp
+                 set latest_event_time = greatest(?, latest_event_time), updated_at = ?
                  where id = ?"
                   (time-conv/to-sql-time timestamp) (db-util/current-sql-timestamp) session-id] ))
 

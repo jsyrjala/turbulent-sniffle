@@ -39,6 +39,7 @@
        ["auth" 'ruuvi.resources.auth]
        ["events" 'ruuvi.resources.events]
        ["users" 'ruuvi.resources.users]
+       ["trackers" 'ruuvi.resources.trackers]
        )
 
       (wrap-authentication (sec/auth-backend auth-conf))

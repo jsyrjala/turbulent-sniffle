@@ -1,7 +1,7 @@
 (ns ruuvi.resources.users
   "User resources"
   {:swagger-tag "Users"
-   :swagger-summary "Resources querying, registering and managing users."}
+   :swagger-summary " querying, registering and managing users."}
   (:require
     [ruuvi.resources.domain :as domain]
     [ruuvi.security :as sec]

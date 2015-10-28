@@ -6,6 +6,5 @@
 
 (user/reset)
 
-
 (user/stop)
 (user/database-reset)

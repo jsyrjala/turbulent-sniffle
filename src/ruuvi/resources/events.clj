@@ -1,5 +1,5 @@
 (ns ruuvi.resources.events
-  "Desc for namespace"
+  "Events"
   {:swagger-tag "Events"
    :swagger-summary "Event related operations"}
   (:require [ring.util.response :as r]
@@ -35,8 +35,9 @@
                :description "Not authenticated"}))
 
 (defn- store-event [db tracker event]
-  (events/store-event! db tracker event)
-  (r/response {:success "ok"}))
+  (let [new-event (events/store-event! db tracker event)])
+  (r/response {:success "ok"
+               :event {:id (:id new-event)}}))
 
 (defn- jwt-authenticated? [identity tracker]
   "Check that logged in user owns the tracker"
