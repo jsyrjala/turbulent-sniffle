@@ -94,10 +94,11 @@
     }
     // ui operations
     function send() {
-        if(!ws) {
+        if(isClosed()) {
             connect()
         }
         var msg = $('#msg').val()
+        $('#msg').val('')
         if(ws.readyState != STATE.open) {
             console.info('Buffering message:', msg)
             buffer.push(msg)
@@ -111,7 +112,7 @@
         return false
     }
     function connect() {
-        if(ws) {
+        if(!isClosed()) {
             close()
         }
         console.info('Connecting to ' + url)
@@ -124,12 +125,21 @@
         return false
     }
     function close() {
-        if(ws) {
+        if(!isClosed()) {
             console.info('Closing connection')
             ws.close()
             ws = undefined
         }
         return false
+    }
+    function isClosed() {
+        if(!ws) {
+            return true
+        }
+        if(_.contains([STATE.closed, STATE.closing], ws.readyState)) {
+            return true;
+        }
+        return false;
     }
     function init() {
         $('#send').click(send)
