@@ -30,7 +30,9 @@
      )))
 
 (defn start-system[system]
-  (component/start system))
+  (let [s (component/start system)]
+    (Thread/sleep 100)
+    s))
 
 (defn stop-system[system]
   (component/stop system))

@@ -29,7 +29,6 @@
                                       :content-type :json
                                       :as :json}
                           headers))]
-    ;;(println "post-url" path (:body result))
     (:body result) ))
 
 (defn create-system
