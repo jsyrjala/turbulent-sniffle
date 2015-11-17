@@ -29,10 +29,8 @@
                          [:ring-handler])
      )))
 
-(defn start-system[system]
-  (let [s (component/start system)]
-    (Thread/sleep 100)
-    s))
+(defn start-system [system]
+  (component/start system))
 
-(defn stop-system[system]
+(defn stop-system [system]
   (component/stop system))

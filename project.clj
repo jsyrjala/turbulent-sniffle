@@ -18,7 +18,7 @@
    [ring/ring-jetty-adapter "1.4.0"]
    [org.eclipse.jetty/jetty-server "9.2.13.v20150730"]
    [org.eclipse.jetty/jetty-jmx "9.2.13.v20150730"]
-   [aleph "0.4.1-beta1"]
+   [aleph "0.4.1-beta3"]
    [potemkin "0.4.1"]
 
    ;; misc
